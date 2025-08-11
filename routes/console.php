@@ -8,12 +8,14 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Schedule GDACS data import every 30 minutes
+// Schedule GDACS data import every 15 minutes
 Schedule::command('gdacs:import')
-    ->everyThirtyMinutes()
+    ->everyFifteenMinutes()
     ->withoutOverlapping()
+    ->onOneServer()
     ->runInBackground()
-    ->appendOutputTo(storage_path('logs/gdacs-import.log'));
+    ->appendOutputTo(storage_path('logs/gdacs-import.log'))
+    ->emailOutputOnFailure(env('ADMIN_EMAIL'));
 
 // Schedule to show GDACS statistics daily at 8 AM
 Schedule::command('gdacs:import --stats')

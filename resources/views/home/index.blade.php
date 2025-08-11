@@ -478,6 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // loadStatistics(); // DISABLED - no dynamic statistics
     setupEventListeners();
     setupCountrySearch();
+    setupAutoRefresh(); // Setup automatic refresh polling
 
     // Initialize Leaflet map
     function initializeMap() {
@@ -514,6 +515,7 @@ document.addEventListener('DOMContentLoaded', function() {
             eventsData = data.events;
             applyFilters(); // Apply current filters to loaded data
             updateRecentEventsList(); // Now enabled for the new events sidebar
+            updateLiveStatistics(); // Update statistics immediately after loading data
             // updateLastUpdateTime(data.last_updated); // DISABLED
             
         } catch (error) {
@@ -642,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Update recent events list
+    // Update recent events list and statistics
     function updateRecentEventsList() {
         const container = document.getElementById('recent-events-list');
         
@@ -653,6 +655,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>Keine Events verfügbar</div>
                 </div>
             `;
+            // Statistics will be updated by calling function
             return;
         }
         
@@ -678,6 +681,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 eventsCountEl.textContent = `(${totalAll})`;
             }
         }
+        
+        // Statistics will be updated by applyFilters() to avoid duplication
         
         if (recentEvents.length === 0) {
             container.innerHTML = `
@@ -729,6 +734,96 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }).join('');
+    }
+
+    // Update live statistics based on current events data (unfiltered)
+    function updateLiveStatistics() {
+        if (!eventsData || eventsData.length === 0) {
+            updateActiveEventsStats(0);
+            updateRecentEventsStats(0);
+            updateHighRiskEventsStats(0);
+            return;
+        }
+        
+        // Calculate statistics based on ALL events (unfiltered)
+        const now = new Date();
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        const activeEventsCount = eventsData.length;
+        
+        const recentEventsCount = eventsData.filter(event => {
+            const eventDate = new Date(event.event_date);
+            return eventDate >= sevenDaysAgo;
+        }).length;
+        
+        const highRiskEventsCount = eventsData.filter(event => {
+            return event.alert_level === 'Red' || event.alert_level === 'Orange';
+        }).length;
+        
+        // Update the statistics displays
+        updateActiveEventsStats(activeEventsCount);
+        updateRecentEventsStats(recentEventsCount);
+        updateHighRiskEventsStats(highRiskEventsCount);
+        
+        console.log(`Statistics updated (all events) - Active: ${activeEventsCount}, Recent (7d): ${recentEventsCount}, High Risk: ${highRiskEventsCount}`);
+    }
+
+    // Update filtered statistics based on currently filtered events
+    function updateFilteredStatistics() {
+        const eventsToCalculate = filteredEvents && filteredEvents.length > 0 ? filteredEvents : eventsData;
+        
+        if (!eventsToCalculate || eventsToCalculate.length === 0) {
+            updateActiveEventsStats(0);
+            updateRecentEventsStats(0);
+            updateHighRiskEventsStats(0);
+            return;
+        }
+        
+        // Calculate statistics based on FILTERED events
+        const now = new Date();
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        const activeEventsCount = eventsToCalculate.length;
+        
+        const recentEventsCount = eventsToCalculate.filter(event => {
+            const eventDate = new Date(event.event_date);
+            return eventDate >= sevenDaysAgo;
+        }).length;
+        
+        const highRiskEventsCount = eventsToCalculate.filter(event => {
+            return event.alert_level === 'Red' || event.alert_level === 'Orange';
+        }).length;
+        
+        // Update the statistics displays
+        updateActiveEventsStats(activeEventsCount);
+        updateRecentEventsStats(recentEventsCount);
+        updateHighRiskEventsStats(highRiskEventsCount);
+        
+        console.log(`Filtered statistics updated - Active: ${activeEventsCount}, Recent (7d): ${recentEventsCount}, High Risk: ${highRiskEventsCount}`);
+    }
+    
+    // Update active events statistics display
+    function updateActiveEventsStats(count) {
+        const activeEventsEl = document.getElementById('active-events');
+        if (activeEventsEl) {
+            activeEventsEl.textContent = count.toLocaleString('de-DE');
+        }
+    }
+    
+    // Update recent events statistics display
+    function updateRecentEventsStats(count) {
+        const recentEventsEl = document.getElementById('recent-events');
+        if (recentEventsEl) {
+            recentEventsEl.textContent = count.toLocaleString('de-DE');
+        }
+    }
+    
+    // Update high risk events statistics display  
+    function updateHighRiskEventsStats(count) {
+        const highRiskEventsEl = document.getElementById('high-risk-events');
+        if (highRiskEventsEl) {
+            highRiskEventsEl.textContent = count.toLocaleString('de-DE');
+        }
     }
 
     // Update statistics display - DISABLED
@@ -801,6 +896,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Then reload the UI data
                         await loadEventsData();
                         await loadGdacsInfo();
+                        // Statistics will be automatically updated by loadEventsData()
                         console.log('Data successfully refreshed from GDACS API');
                     } else {
                         console.error('Failed to refresh GDACS data:', refreshData.message);
@@ -1000,6 +1096,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update filter status display
         updateFilterStatus();
+        
+        // Update statistics based on filtered events
+        updateFilteredStatistics();
     }
 
     // Update filter status display
@@ -1428,6 +1527,136 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideDropdown();
             }
         });
+    }
+
+    // Setup automatic refresh using both polling and Server-Sent Events
+    function setupAutoRefresh() {
+        let lastUpdateTime = null;
+        let useServerSentEvents = true;
+        
+        // Try Server-Sent Events first (more efficient)
+        if (useServerSentEvents && typeof(EventSource) !== "undefined") {
+            console.log('🔄 Setting up Server-Sent Events for real-time GDACS updates...');
+            
+            const eventSource = new EventSource('/api/gdacs-updates');
+            
+            eventSource.addEventListener('gdacs-updated', function(event) {
+                const data = JSON.parse(event.data);
+                console.log('📡 Received GDACS update via SSE:', data);
+                
+                // Show notification and refresh data
+                showUpdateNotification('Neue GDACS Daten verfügbar');
+                refreshAllData();
+            });
+            
+            eventSource.addEventListener('heartbeat', function(event) {
+                console.log('💓 SSE Heartbeat received');
+            });
+            
+            eventSource.onerror = function(event) {
+                console.warn('⚠️ SSE connection error, falling back to polling');
+                eventSource.close();
+                startPollingFallback();
+            };
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', function() {
+                eventSource.close();
+            });
+            
+        } else {
+            startPollingFallback();
+        }
+        
+        // Fallback polling method
+        function startPollingFallback() {
+            console.log('🔄 Starting polling fallback (checks every 2 minutes)');
+            
+            setInterval(async function() {
+                try {
+                    const response = await fetch('/api/dashboard/stats');
+                    const data = await response.json();
+                    
+                    const currentUpdateTime = data.last_update;
+                    
+                    // If this is the first check, just store the time
+                    if (lastUpdateTime === null) {
+                        lastUpdateTime = currentUpdateTime;
+                        return;
+                    }
+                    
+                    // If the update time has changed, refresh all data
+                    if (currentUpdateTime && currentUpdateTime !== lastUpdateTime) {
+                        console.log('🔄 New GDACS data detected via polling...');
+                        
+                        lastUpdateTime = currentUpdateTime;
+                        showUpdateNotification('GDACS Daten aktualisiert');
+                        refreshAllData();
+                    }
+                    
+                } catch (error) {
+                    console.error('Error checking for updates:', error);
+                }
+            }, 2 * 60 * 1000); // Check every 2 minutes
+        }
+        
+        // Refresh all data function
+        async function refreshAllData() {
+            try {
+                await Promise.all([
+                    loadEventsData(),
+                    loadGdacsInfo()
+                ]);
+                console.log('✅ UI refreshed with new GDACS data');
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            }
+        }
+    }
+    
+    // Show brief update notification
+    function showUpdateNotification(message = 'GDACS Daten aktualisiert') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.gdacs-notification');
+        existingNotifications.forEach(notification => {
+            document.body.removeChild(notification);
+        });
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'gdacs-notification fixed top-20 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-[9999] flex items-center';
+        notification.style.animation = 'slideIn 0.3s ease-out';
+        notification.innerHTML = `
+            <i class="fas fa-sync-alt fa-spin mr-2"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        `;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 4 seconds
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }, 4000);
+        
+        // Flash the GDACS info panel to draw attention
+        const gdacsPanel = document.querySelector('.gdacs-info-panel');
+        if (gdacsPanel) {
+            gdacsPanel.style.animation = 'pulse 0.5s ease-in-out 2';
+            setTimeout(() => {
+                gdacsPanel.style.animation = '';
+            }, 1000);
+        }
     }
 
     // Make functions globally available

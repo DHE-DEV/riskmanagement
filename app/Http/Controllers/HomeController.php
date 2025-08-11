@@ -191,4 +191,59 @@ class HomeController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Server-Sent Events stream for GDACS updates
+     */
+    public function gdacsUpdatesStream(Request $request)
+    {
+        // Set headers for Server-Sent Events
+        $response = response()->stream(function () {
+            $lastUpdateCheck = null;
+            $checkInterval = 30; // Check every 30 seconds
+            
+            while (true) {
+                $statistics = $this->gdacsService->getStatistics();
+                $currentUpdate = $statistics['last_update'];
+                
+                // If this is first check or data has been updated
+                if ($lastUpdateCheck === null) {
+                    $lastUpdateCheck = $currentUpdate;
+                } elseif ($currentUpdate && $currentUpdate !== $lastUpdateCheck) {
+                    // Send update event
+                    echo "event: gdacs-updated\n";
+                    echo "data: " . json_encode([
+                        'last_update' => $currentUpdate,
+                        'timestamp' => now()->toISOString(),
+                        'message' => 'GDACS data has been updated'
+                    ]) . "\n\n";
+                    
+                    $lastUpdateCheck = $currentUpdate;
+                    flush();
+                }
+                
+                // Send heartbeat every minute
+                if (time() % 60 === 0) {
+                    echo "event: heartbeat\n";
+                    echo "data: " . json_encode(['timestamp' => now()->toISOString()]) . "\n\n";
+                    flush();
+                }
+                
+                sleep($checkInterval);
+                
+                // Break if connection is closed
+                if (connection_aborted()) {
+                    break;
+                }
+            }
+        });
+        
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Connection', 'keep-alive');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+        
+        return $response;
+    }
 }

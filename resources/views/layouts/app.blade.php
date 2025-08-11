@@ -160,6 +160,29 @@
         .event-volcano { color: #dc2626; }
         .event-drought { color: #eab308; }
         .event-other { color: #6b7280; }
+        
+        /* Update notification animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
     </style>
     
     @stack('styles')

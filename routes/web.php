@@ -12,4 +12,5 @@ Route::prefix('api')->group(function () {
     Route::get('events/{id}', [HomeController::class, 'getEventDetails'])->name('api.events.details');
     Route::get('dashboard/stats', [HomeController::class, 'getDashboardStats'])->name('api.dashboard.stats');
     Route::post('refresh-gdacs', [HomeController::class, 'refreshGdacsData'])->name('api.refresh.gdacs');
+    Route::get('gdacs-updates', [HomeController::class, 'gdacsUpdatesStream'])->name('api.gdacs.updates');
 });
