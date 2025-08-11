@@ -1,0 +1,515 @@
+/* Custom CSS for Risk Management System */
+
+/* CRITICAL: Prevent automatic page growing */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    overflow: hidden !important;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100% !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Prevent any scrollbars */
+html, body, #app, main {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+/* Leaflet map container fix */
+#world-map {
+    overflow: hidden !important;
+}
+
+.leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Controlled transitions only for specific elements */
+.sidebar-scroll, #sidebar, .mobile-open {
+    transition: all 0.3s ease !important;
+}
+
+/* Pulse animations DISABLED - could cause layout issues */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.pulse-marker {
+    /* animation: pulse 2s infinite; - DISABLED */
+    animation: none !important;
+}
+
+.pulse-marker-fast {
+    /* animation: pulse 1s infinite; - DISABLED */
+    animation: none !important;
+}
+
+.pulse-marker-slow {
+    /* animation: pulse 3s infinite; - DISABLED */
+    animation: none !important;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Map marker animations */
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Custom scrollbar for sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Enhanced card hover effects */
+.event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal animations */
+.modal-enter {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.modal-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.3s ease;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        max-width: 350px;
+        transform: translateX(-100%);
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 40;
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .map-container {
+        height: calc(100vh - 60px);
+    }
+    
+    .mobile-overlay {
+        position: fixed;
+        inset: 0;
+        bg-black bg-opacity-50;
+        z-index: 30;
+    }
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 120px;
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-active {
+    background-color: #22c55e;
+    animation: pulse 2s infinite;
+}
+
+.status-warning {
+    background-color: #f59e0b;
+    animation: pulse 1.5s infinite;
+}
+
+.status-critical {
+    background-color: #ef4444;
+    animation: pulse 1s infinite;
+}
+
+/* Enhanced tooltips */
+.tooltip {
+    position: relative;
+}
+
+.tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
+
+.tooltip:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #1f2937;
+    z-index: 1000;
+}
+
+/* Loading spinner variants */
+.spinner-sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.spinner-lg {
+    width: 40px;
+    height: 40px;
+    border-width: 4px;
+}
+
+/* Event type colors */
+.type-earthquake { color: #8b5cf6; }
+.type-hurricane { color: #06b6d4; }
+.type-flood { color: #3b82f6; }
+.type-wildfire { color: #f97316; }
+.type-volcano { color: #dc2626; }
+.type-drought { color: #eab308; }
+.type-other { color: #6b7280; }
+
+/* Alert level gradients */
+.alert-gradient-red {
+    background: linear-gradient(45deg, #ef4444, #dc2626);
+}
+
+.alert-gradient-orange {
+    background: linear-gradient(45deg, #f97316, #ea580c);
+}
+
+.alert-gradient-green {
+    background: linear-gradient(45deg, #22c55e, #16a34a);
+}
+
+/* Map controls enhancements */
+.map-controls {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Statistics cards */
+.stat-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Dark mode support (future enhancement) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1f2937;
+        --bg-secondary: #111827;
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --border-color: #374151;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .map-container {
+        height: 400px;
+    }
+}
+
+/* Accessibility improvements */
+.focus-visible:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Performance optimizations */
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+/* Custom markers for different event types */
+.marker-earthquake::before {
+    content: "🌍";
+    font-size: 16px;
+}
+
+.marker-hurricane::before {
+    content: "🌪️";
+    font-size: 16px;
+}
+
+.marker-flood::before {
+    content: "🌊";
+    font-size: 16px;
+}
+
+.marker-wildfire::before {
+    content: "🔥";
+    font-size: 16px;
+}
+
+.marker-volcano::before {
+    content: "🌋";
+    font-size: 16px;
+}
+
+.marker-drought::before {
+    content: "🏜️";
+    font-size: 16px;
+}
+
+/* Map UI Layer - Fixed positioning independent of zoom */
+.leaflet-control-container {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.leaflet-control-container .leaflet-top,
+.leaflet-control-container .leaflet-bottom {
+    pointer-events: auto;
+}
+
+.leaflet-control-container .leaflet-top.leaflet-right {
+    top: 20px;
+    right: 20px;
+}
+
+.leaflet-control-container .leaflet-bottom.leaflet-right {
+    bottom: 80px;
+    right: 20px;
+}
+
+/* Ensure UI elements stay on top of map */
+.leaflet-control-container > div {
+    position: absolute;
+}
+
+/* Make sure buttons and legends are interactive */
+.leaflet-control-container button,
+.leaflet-control-container .bg-white {
+    pointer-events: auto;
+    position: relative;
+    z-index: 1001;
+}
+
+/* Event list styling */
+.event-card {
+    transition: all 0.2s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Text truncation for event titles */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Event sidebar responsive behavior */
+@media (max-width: 1024px) {
+    #events-sidebar {
+        display: none !important;
+    }
+}
+
+/* Country search dropdown - ensure it appears above everything */
+#country-dropdown {
+    z-index: 10000 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #d1d5db;
+    position: absolute !important;
+    background: white !important;
+    min-width: 224px; /* Match input width w-56 */
+}
+
+#country-dropdown .country-result {
+    cursor: pointer;
+    padding: 8px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+#country-dropdown .country-result:last-child {
+    border-bottom: none;
+}
+
+#country-dropdown .country-result:hover {
+    background-color: #eff6ff !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Ensure navigation has high z-index but lower than dropdown */
+nav {
+    z-index: 1100 !important;
+    position: fixed !important;
+}
+
+/* Country search container positioning */
+#country-search {
+    position: relative;
+}
+
+/* Make sure the search container has proper stacking context */
+.country-search-container {
+    position: relative;
+    z-index: 1200;
+}
+
+/* Ensure filter checkboxes are clickable */
+.alert-filter {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.alert-filter:hover {
+    transform: scale(1.05);
+}
+
+/* Make sure the label areas are also clickable */
+.alert-filter + span {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Debug styling for checkboxes */
+.alert-filter {
+    border: 2px solid #d1d5db !important;
+    background: white !important;
+}
+
+.alert-filter:checked {
+    background-color: currentColor !important;
+    border-color: currentColor !important;
+}
+
+/* GDACS Info Box styling */
+.leaflet-bottom.leaflet-left {
+    bottom: 80px !important;
+    left: 20px !important;
+    z-index: 1000 !important;
+    position: absolute !important;
+}
+
+/* Style for GDACS info panel */
+#gdacs-last-update {
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* Make sure GDACS info box is always visible */
+.gdacs-info-panel {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    max-width: 200px !important;
+    pointer-events: auto !important;
+}
