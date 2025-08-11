@@ -25,132 +25,132 @@
                 }
             }
         </style>
-        <!-- Statistics Panel -->
-        <div class="p-6 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900 mb-4">
-                <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
-                Live Statistiken
-            </h2>
+        <!-- Statistics Panel (Collapsible) -->
+        <div class="border-b border-gray-200">
+            <button class="w-full p-6 text-left hover:bg-gray-50 transition-colors" onclick="toggleSection('statistics')">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                        Live Statistiken
+                    </h2>
+                    <i id="statistics-icon" class="fas fa-chevron-up text-gray-400 transition-transform"></i>
+                </div>
+            </button>
             
-            <!-- Quick Stats Grid -->
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div class="bg-blue-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-blue-600" id="total-events">
-                        {{ number_format($statistics['total_events'] ?? 0) }}
+            <!-- Collapsible Content -->
+            <div id="statistics-content" class="px-6 pb-6">
+                <!-- Quick Stats Grid -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600" id="total-events">
+                            {{ number_format($statistics['total_events'] ?? 0) }}
+                        </div>
+                        <div class="text-xs text-blue-800">Gesamt Events</div>
                     </div>
-                    <div class="text-xs text-blue-800">Gesamt Events</div>
-                </div>
-                
-                <div class="bg-green-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-green-600" id="active-events">
-                        {{ number_format($statistics['active_events'] ?? 0) }}
+                    
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600" id="active-events">
+                            {{ number_format($statistics['active_events'] ?? 0) }}
+                        </div>
+                        <div class="text-xs text-green-800">Aktive Events</div>
                     </div>
-                    <div class="text-xs text-green-800">Aktive Events</div>
-                </div>
-                
-                <div class="bg-yellow-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-yellow-600" id="recent-events">0</div>
-                    <div class="text-xs text-yellow-800">Letzte 7 Tage</div>
-                </div>
-                
-                <div class="bg-red-50 p-3 rounded-lg">
-                    <div class="text-2xl font-bold text-red-600" id="high-risk-events">0</div>
-                    <div class="text-xs text-red-800">Hohes Risiko</div>
-                </div>
-            </div>
-
-            <!-- Alert Level Chart - DISABLED -->
-            <div class="mb-4">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Warnstufen</h3>
-                <div class="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
-                    Diagramme für Stabilität deaktiviert
-                </div>
-            </div>
-
-            <!-- Event Type Chart - DISABLED -->
-            <div>
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Event-Typen</h3>
-                <div class="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
-                    Diagramme für Stabilität deaktiviert
+                    
+                    <div class="bg-yellow-50 p-3 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-600" id="recent-events">0</div>
+                        <div class="text-xs text-yellow-800">Letzte 7 Tage</div>
+                    </div>
+                    
+                    <div class="bg-red-50 p-3 rounded-lg">
+                        <div class="text-2xl font-bold text-red-600" id="high-risk-events">0</div>
+                        <div class="text-xs text-red-800">Hohes Risiko</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Filters Panel -->
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                <i class="fas fa-filter mr-2 text-blue-600"></i>
-                Filter
-            </h3>
+        <!-- Filters Panel (Collapsible) -->
+        <div class="border-b border-gray-200">
+            <button class="w-full p-6 text-left hover:bg-gray-50 transition-colors" onclick="toggleSection('filters')">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-filter mr-2 text-blue-600"></i>
+                        Filter
+                    </h3>
+                    <i id="filters-icon" class="fas fa-chevron-up text-gray-400 transition-transform"></i>
+                </div>
+            </button>
             
-            <!-- Alert Level Filter -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Warnstufe</label>
-                <div class="space-y-2">
-                    <label class="flex items-center">
-                        <input type="checkbox" class="alert-filter h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" value="Red" checked>
-                        <span class="ml-2 text-sm text-gray-700">
-                            <span class="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
-                            Rot (Kritisch)
-                        </span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" class="alert-filter h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded" value="Orange" checked>
-                        <span class="ml-2 text-sm text-gray-700">
-                            <span class="inline-block w-3 h-3 bg-orange-500 rounded-full mr-2"></span>
-                            Orange (Hoch)
-                        </span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" class="alert-filter h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" value="Green" checked>
-                        <span class="ml-2 text-sm text-gray-700">
-                            <span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
-                            Grün (Niedrig)
-                        </span>
-                    </label>
+            <!-- Collapsible Content -->
+            <div id="filters-content" class="px-6 pb-6">
+                <!-- Alert Level Filter -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Warnstufe</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="alert-filter h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" value="Red" checked>
+                            <span class="ml-2 text-sm text-gray-700">
+                                <span class="inline-block w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                                Rot (Kritisch)
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="alert-filter h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded" value="Orange" checked>
+                            <span class="ml-2 text-sm text-gray-700">
+                                <span class="inline-block w-3 h-3 bg-orange-500 rounded-full mr-2"></span>
+                                Orange (Hoch)
+                            </span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="alert-filter h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" value="Green" checked>
+                            <span class="ml-2 text-sm text-gray-700">
+                                <span class="inline-block w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                                Grün (Niedrig)
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Event Type Filter -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Event-Typ</label>
+                    <select id="event-type-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="all">Alle Typen</option>
+                        <option value="earthquake">🌍 Erdbeben</option>
+                        <option value="hurricane">🌪️ Hurrikan</option>
+                        <option value="flood">🌊 Überschwemmung</option>
+                        <option value="wildfire">🔥 Waldbrand</option>
+                        <option value="volcano">🌋 Vulkan</option>
+                        <option value="drought">🏜️ Dürre</option>
+                    </select>
+                </div>
+
+                <!-- Time Filter -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Zeitraum</label>
+                    <select id="time-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        <option value="all">Alle</option>
+                        <option value="24h">Letzte 24 Stunden</option>
+                        <option value="7d">Letzte 7 Tage</option>
+                        <option value="30d">Letzte 30 Tage</option>
+                    </select>
                 </div>
             </div>
+        </div>
 
-            <!-- Event Type Filter -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Event-Typ</label>
-                <select id="event-type-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                    <option value="all">Alle Typen</option>
-                    <option value="earthquake">🌍 Erdbeben</option>
-                    <option value="hurricane">🌪️ Hurrikan</option>
-                    <option value="flood">🌊 Überschwemmung</option>
-                    <option value="wildfire">🔥 Waldbrand</option>
-                    <option value="volcano">🌋 Vulkan</option>
-                    <option value="drought">🏜️ Dürre</option>
-                </select>
-            </div>
-
-            <!-- Time Filter -->
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Zeitraum</label>
-                <select id="time-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                    <option value="all">Alle</option>
-                    <option value="24h">Letzte 24 Stunden</option>
-                    <option value="7d">Letzte 7 Tage</option>
-                    <option value="30d">Letzte 30 Tage</option>
-                </select>
-            </div>
+        <!-- Map Controls -->
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-map mr-2 text-blue-600"></i>
+                Karten-Steuerung
+            </h3>
             
-            <!-- Map Controls -->
-            <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-map mr-2 text-blue-600"></i>
-                    Karten-Steuerung
-                </h3>
-                
-                <button 
-                    id="center-map-button" 
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
-                >
-                    <i class="fas fa-crosshairs mr-2"></i>
-                    Karte zentrieren
-                </button>
-            </div>
+            <button 
+                id="center-map-button" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
+            >
+                <i class="fas fa-crosshairs mr-2"></i>
+                Karte zentrieren
+            </button>
         </div>
     </div>
 
@@ -1659,12 +1659,62 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Toggle collapsible sections
+    function toggleSection(sectionName) {
+        const content = document.getElementById(`${sectionName}-content`);
+        const icon = document.getElementById(`${sectionName}-icon`);
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+            
+            // Store state in localStorage
+            localStorage.setItem(`sidebar-${sectionName}`, 'open');
+        } else {
+            content.style.display = 'none';
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+            
+            // Store state in localStorage
+            localStorage.setItem(`sidebar-${sectionName}`, 'closed');
+        }
+    }
+    
+    // Initialize collapsible sections (default: closed)
+    function initializeCollapsibleSections() {
+        const sections = ['statistics', 'filters'];
+        
+        sections.forEach(section => {
+            const content = document.getElementById(`${section}-content`);
+            const icon = document.getElementById(`${section}-icon`);
+            
+            // Check localStorage for saved state, default to closed
+            const savedState = localStorage.getItem(`sidebar-${section}`);
+            const shouldBeOpen = savedState === 'open';
+            
+            if (shouldBeOpen) {
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        });
+    }
+    
+    // Initialize collapsible sections on page load
+    initializeCollapsibleSections();
+
     // Make functions globally available
     window.showEventDetails = showEventDetails;
     window.focusEvent = focusEvent;
     window.hideEventDetails = hideEventDetails;
     window.toggleMobileSidebar = toggleMobileSidebar;
     window.closeMobileSidebar = closeMobileSidebar;
+    window.toggleSection = toggleSection;
 });
 </script>
 @endpush
