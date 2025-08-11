@@ -243,7 +243,7 @@
                     <div class="flex items-center text-sm text-gray-600">
                         <i class="fas fa-database text-blue-500 mr-2"></i>
                         <div>
-                            <div class="text-xs font-medium text-gray-700">GDACS Daten</div>
+                            <div class="text-xs font-medium text-gray-700">Risk Daten</div>
                             <div id="gdacs-last-update" class="text-xs text-gray-500">
                                 Lade...
                             </div>
@@ -1536,16 +1536,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Try Server-Sent Events first (more efficient)
         if (useServerSentEvents && typeof(EventSource) !== "undefined") {
-            console.log('🔄 Setting up Server-Sent Events for real-time GDACS updates...');
+            console.log('🔄 Setting up Server-Sent Events for real-time Risk updates...');
             
             const eventSource = new EventSource('/api/gdacs-updates');
             
             eventSource.addEventListener('gdacs-updated', function(event) {
                 const data = JSON.parse(event.data);
-                console.log('📡 Received GDACS update via SSE:', data);
+                console.log('📡 Received Risk update via SSE:', data);
                 
                 // Show notification and refresh data
-                showUpdateNotification('Neue GDACS Daten verfügbar');
+                showUpdateNotification('Neue Risk Daten verfügbar');
                 refreshAllData();
             });
             
@@ -1587,10 +1587,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // If the update time has changed, refresh all data
                     if (currentUpdateTime && currentUpdateTime !== lastUpdateTime) {
-                        console.log('🔄 New GDACS data detected via polling...');
+                        console.log('🔄 New Risk data detected via polling...');
                         
                         lastUpdateTime = currentUpdateTime;
-                        showUpdateNotification('GDACS Daten aktualisiert');
+                        showUpdateNotification('Risk Daten aktualisiert');
                         refreshAllData();
                     }
                     
@@ -1615,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Show brief update notification
-    function showUpdateNotification(message = 'GDACS Daten aktualisiert') {
+    function showUpdateNotification(message = 'Risk Daten aktualisiert') {
         // Remove any existing notifications
         const existingNotifications = document.querySelectorAll('.gdacs-notification');
         existingNotifications.forEach(notification => {
